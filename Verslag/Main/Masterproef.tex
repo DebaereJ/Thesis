@@ -1,0 +1,69 @@
+\documentclass{book}
+
+\usepackage{titling}
+\title{Literatuurstudie}
+\author{Debaere Jens}
+\usepackage[pdftitle={\thetitle},pdfauthor={\theauthor}]{hyperref}
+\usepackage[dutch]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, amsthm, siunitx , graphicx, epstopdf}
+\usepackage{tabularx}
+\begin{document}
+	\maketitle
+	%\begin{preface}
+	%	Dit is mijn dankwoord om iedereen te danken die mij bezig gehouden heeft.
+	%	Hierbij dank ik mijn promotor, mijn begeleider en de voltallige jury.
+	%	Ook mijn familie heeft mij erg gesteund natuurlijk.
+	%\end{preface}
+	
+	%\tableofcontents*
+	
+	%\begin{abstract}
+	%	In dit \texttt{abstract} environment wordt een al dan niet uitgebreide
+	%	samenvatting van het werk gegeven. De bedoeling is wel dat dit tot
+	%	1~bladzijde beperkt blijft.
+		
+	%	\lipsum[1]
+	%\end{abstract}
+	
+	% Een lijst van figuren en tabellen is optioneel
+	%\listoffigures
+	%\listoftables
+	% Bij een beperkt aantal figuren en tabellen gebruik je liever het volgende:
+	%\listoffiguresandtables
+	% De lijst van symbolen is eveneens optioneel.
+	% Deze lijst moet wel manueel aangemaakt worden, bv. als volgt:
+
+\setcounter{chapter}{-1}
+\chapter{Lijst van afkortingen en symbolen}
+\section*{Afkortingen}
+\begin{flushleft}
+\renewcommand{\arraystretch}{1.1}
+	\begin{tabularx}{\textwidth}{@{}p{12mm}X@{}}
+    SLAM  & Simultaneous localization and mapping \\
+    KF 	  & Kalman filter\\
+    EKF   & Extended Kalman filter\\
+    UKF   & Unscented Kalman filter\\
+    IF    & Information filter\\
+    EIF   & Extended information filter\\
+    MCL   & Monte Carlo Localization \\
+\end{tabularx}
+\end{flushleft}
+\section*{Symbolen}
+\begin{flushleft}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{}p{12mm}X@{}}
+	$m$   & map \\
+	$\pi$ & Het getal pi \\
+	$x_{0:t}$ & Vector met alle posities tot en met tijdstip t \\
+	$u_{0:t}$ & Vector met alle controlesignalen tot en met tijdstip t \\
+	$z_{0:t}$ & Vector met alle meetobservaties tot en met tijdstip t \\
+\end{tabularx}
+\end{flushleft}
+
+
+\mainmatter
+
+\include{Literatuurstudie}
+
+\end{document}

@@ -1,0 +1,76 @@
+\chapter{Literatuurstudie}
+\label{hoofdstuk:1}
+\section{Inleiding}
+\subsection{Wat is SLAM?}
+Wanneer een robot in een ruimte losgelaten wordt is het wenselijk dat deze daar zonder begeleiding door kan navigeren. Dit kan bijvoorbeeld door de robot een voorgeprogrammeerde map mee te geven. Deze kan de robot dan vergelijken met zijn observaties om een schatting te maken van de locatie waarop hij zich bevindt. Op die manier is het mogelijk een traject te bepalen om naar een gewenste positie te navigeren.  Dit probleem staat bekend onder het "localization-problem". \\
+Daarnaast kan het ook wenselijk zijn een map op te bouwen van de omgeving terwijl de robot zich door deze omgeving beweegt. Dit kan door de metingen te verwerken terwijl de robot zijn positie op elk moment kent. \\
+SLAM ofwel "Simultaneous localization and Mapping" combineert deze twee problemen en probeert deze tegelijk op te lossen. Hierbij zijn dus zowel de positie als de map volledig onbekend. Een oplossing van dit probleem opent dan ook de deuren naar een volledig autonome navigatie. \\
+Toepassingen hiervan kunnen teruggevonden worden in bijvoorbeeld autonome stofzuiger of grasmachines. Maar ook op industriële schaal waarin autonome heftrucks zich in een omgeving voortbewegen waarin tegelijk personen kunnen rondlopen zonder verstoring van het systeem.\cite{Course}\\
+
+\subsection{Definitie van het probleem}
+Om tot een oplossing, of tenminste een goeie benadering ervan, te komen moeten dus twee belangrijke onbekenden bepaalt worden.
+\begin{enumerate}
+\item \textbf{De kaart van de omgeving: }$m$
+\item \textbf{Het pad van de robot: }Vector $x_{0:t}$ met alle posities tot op tijdstip $t$
+\end{enumerate}
+In elke implementatie worden deze bepaalt door enerzijds rekening te houden met de observaties $z_{1:t}$ en de controle-signalen van de robot $u_{1:t}$.\\
+Aangezien in de realiteit geen enkel systeem exact werkt is de oplossing van het probleem een kansverdeling:
+\begin{equation*}
+p( x_{t}  ,  m | z_{1:t}  ,  u_{1:t})
+\end{equation*}
+Deze formulering staat bekend als online SLAM omdat de onbekende hier enkel de positie op tijdstip t is. Dit betekent dat deze opnieuw geëvalueerd wordt voor elke tijdstap $t$ om tot een benadering van de huidige positie te komen.\\
+Voor de schatting van de positie worden meestal twee verschillende modellen gebruikt. Enerzijds is er het bewegingsmodel waarin op basis van de vorige positie en de controle-signalen een schatting gemaakt wordt van waar de robot terechtkomt. In ideale omstandigheden zou dit genoeg zijn om op elk moment de positie te bepalen maar door niet-idealiteiten van het mechanisme en verschijnselen zoals slip is deze feedforward-methode zelden voldoende. Anderzijds is er daarom ook nog het observatiemodel die gebruik maakt van de observaties die gemaakt worden om te schatten waar de robot zich bevindt.
+\section{Algoritmes}
+\subsection{Recursieve Bayes Filter}
+Twee belangrijke groepen van algoritmes maken gebruik van de Bayes Filter als basisaanpak om SLAM op te lossen. Deze twee groepen zijn de Kalman-filters en de Particle-filters die later aan bod komen. In deze sectie wordt deze belangrijke basis besproken en worden de assumpties die hierbij gemaakt worden verklaard. De bedoeling van de afleiding is om een recursief verband te bepalen tussen de verschillende toestanden (posities) van de robot.\\
+De gewenste kansverdeling is:
+\begin{equation*}
+p(x_t|z_{1:t},u_{1:t})
+\end{equation*}
+Door het theorema van Bayes \footnote{Theorema van Bayes: $p(A|B) = \frac{P(B|A)P(A)}{P(B)}$} toe te passen op deze uitdrukking bekomt men:
+\begin{equation*}
+\eta p(z_t|x_{t},z_{1:t-1},u_{1:t})p(x_t|z_{1:t-1},u_{1:t}) 
+\end{equation*}
+waarbij $\eta$ een normalisatie-factor is.\\
+De kansverdeling $ p(z_t|x_{t},z_{1:t-1},u_{1:t})$ is de kans op een observatie $z_t$, gegeven de toestand $x_t$ op tijdstip $t$ en alle voorgaande observaties en commando's. Hierbij kan een assumptie gemaakt worden dat deze observaties en commando's eigenlijk overbodig zijn gezien de toestand op tijdstip $t$ volledig gekend is. Dit wordt de Markov assumptie genoemd. Hiermee vereenvoudigd de kansverdeling tot:
+\begin{equation*}
+\eta p(z_t|x_t)p(x_t|z_{1:t-1},u_{1:t}) 
+\end{equation*}
+De kansverdeling $p(x_t|z_{1:t-1},u_{1:t})$ is de kansverdeling voor de huidige toestand, gegeven alle observaties behalve de laatste en alle controle-commando's tot nu. Omdat nu een recursief verband gewenst wordt is het interessant om met de wet van de totale kans ook $x_{t-1}$ in de uitdrukking te betrekken. Hiervoor wordt geïntegreerd over alle mogelijke toestanden $x_{t-1}$. Hiermee wordt de uitdrukking:
+\begin{equation*}
+\eta p(z_t|x_t)\int_{x_{t-1}}p(x_t|x_{t-1},z_{1:t-1},u_{1:t})p(x_{t-1}|z_{1:t-1},u_{1:t})dx_{t-1}
+\end{equation*}
+In deze uitdrukking kan de Markov assumptie nogmaals gebruikt worden om $p(x_t|x_{t-1},z_{1:t-1},u_{1:t})$ te vereenvoudigen. Aangezien de toestand $x_{t-1}$ gekend is kunnen alle observaties en commando's tot en met tijdstip $t-1$ weggelaten worden. Hiermee wordt de uitdrukking:
+\begin{equation*}
+\eta p(z_t|x_t)\int_{x_{t-1}}p(x_t|x_{t-1},u_{t})p(x_{t-1}|z_{1:t-1},u_{1:t})dx_{t-1}
+\end{equation*}
+Tenslotte kan ook nog voor $p(x_{t-1}|z_{1:t-1},u_{1:t})$ de Markov assumptie toegepast worden. Aangezien het hier gaat om een schatting voor de toestand op tijdstip $t-1$ kan verondersteld worden dat het commando $u_t$ onbelangrijk is omdat dit pas na de toestand uitgevoerd zal worden. Er dient benadrukt te worden dat dit een assumptie is aangezien commando's die leiden tot eventuele botsingen als minder waarschijnlijk kunnen worden verondersteld. De uitdrukking wordt nu:
+\begin{equation*}
+\eta p(z_t|x_t)\int_{x_{t-1}}p(x_t|x_{t-1},u_{t})p(x_{t-1}|z_{1:t-1},u_{1:t-1})dx_{t-1}
+\end{equation*}
+en nu valt meteen ook op dat $p(x_{t-1}|z_{1:t-1},u_{1:t-1})$ heel sterk lijkt op de uitdrukking waarvan vertrokken werd, namelijk: $p(x_t|z_{1:t},u_{1:t})$. Dit betekent dat voorgaande stappen geleid hebben tot een recursief verband tussen de twee toestanden:
+\begin{equation*}
+p(x_t|z_{1:t},u_{1:t})=\eta p(z_t|x_t)\int_{x_{t-1}}p(x_t|x_{t-1},u_{t})p(x_{t-1}|z_{1:t-1},u_{1:t-1})dx_{t-1}
+\end{equation*}
+De uitdrukking wordt meestal geschreven in twee aparte stappen:
+\begin{enumerate}
+	\item \textbf{Voorspelling: }$\overline{bel}(x_t) = \int p(x_t|u_t,x_{t-1})bel(x_{t-1})dx_{t-1}$
+	\item \textbf{Correctie: } $bel(x_t) = \eta p(z_t|x_t)\overline{bel}(x_t)$
+\end{enumerate}
+waarbij $bel(x_t) = p(x_t|z_{1:t},u_{1:t})$.\\
+Het valt al snel op dat de voorspelling enkel afhankelijk is van de vorige toestand en het bewegingscommando die op tijdstip $t$ aan de robot wordt opgelegd. $p(x_t|u_t,x_{t-1})$ wordt het bewegingsmodel genoemd.\\
+De correctie-stap betrekt dan ook nog de observaties erbij en $\eta p(z_t|x_t)$ wordt het observatie-model genoemd.\\
+De verschillen tussen de beschikbare algoritmes liggen nog in de gebruikte benaderingen voor de kansverdelingen en het al of niet lineair zijn van het bewegings- en observatie-model.
+
+\subsection{Kalman filter}
+Een specifieke implementatie van de Bayes filter is de Kalman filter. De assumpties die gemaakt worden voor het gebruik van de Kalman filter zijn:
+\begin{enumerate}
+	\item De kansverdeling is Gaussisch
+	\item De modellen zijn lineair
+\end{enumerate}
+Wanneer deze assumpties gerechtvaardigd zijn is deze implementatie bovendien de meest nauwkeurige.
+Een lineair model wordt standaard gegeven door een typisch toestandsmodel. %ken de nederlandse naam niet "state space model".. toestandsmodel?
+Aangezien men ook de kansverdeling kent kunnen de kansen uitgeschreven worden in de Bayes filter door gebruik te maken van de vergelijking van de gausscurve. Omdat deze twee nu gekend zijn kan dan de Bayes filter uitgeschreven worden in functie van het gemiddelde en de variantie van de verdeling waarbij het recursief model nu een voorspelling maakt voor de gemiddelde waarde en de variantie van de volgende toestand \cite{kalman}. Deze voorspelling wordt enerzijds gebaseerd op de voorspelling die men verkrijgt met het bewegingsmodel door de bewegingscommando en de vorige toestand te evalueren en anderzijds door de waarnemingen van de robot. Tussen deze twee modellen wordt dan een weging gemaakt die gebaseerd is op de onzekerheid van de modellen. Zo zal bij het gebruik van nauwkeurige sensoren het observatiemodel meer doorwegen dan het bewegingsmodel.
+
+\subsubsection{Extended Kalman filter}
+De implementatie van de "Extended Kalman filter" is een uitbreiding van de gewone Kalman filter in de zin dat hierbij een niet-lineair model nu toch toegelaten is. Wanneer een niet lineair model toegepast wordt op de Bayes filter zou de kansverdeling voor de volgende toestand niet meer gaussisch zijn, ook al was de vorige dat wel. Dit komt omdat elke mogelijke positie binnen de verdeling anders verschaalt zou worden. Daarom moet het model gelineariseerd worden om toch nog de Kalman filter te kunnen gebruiken. Dit wordt uitgevoerd door rond de gemiddelde waarde te lineariseren. In een toestandsmodel betekent dit dus dat de Jacobiaan moet worden bepaald. \cite{controltheory}

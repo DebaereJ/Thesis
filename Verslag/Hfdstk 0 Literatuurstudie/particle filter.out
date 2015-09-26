@@ -1,0 +1,10 @@
+\BOOKMARK [0][-]{chapter.1}{Particle filter}{}% 1
+\BOOKMARK [1][-]{section.1.1}{beschrijving particle filter}{chapter.1}% 2
+\BOOKMARK [1][-]{section.1.2}{Sampling}{chapter.1}% 3
+\BOOKMARK [1][-]{section.1.3}{Afleiding gewichten bij MCL particle filter}{chapter.1}% 4
+\BOOKMARK [1][-]{section.1.4}{Voor-en nadelen van de particle filter}{chapter.1}% 5
+\BOOKMARK [2][-]{subsection.1.4.1}{Voordelen}{section.1.4}% 6
+\BOOKMARK [2][-]{subsection.1.4.2}{Nadelen}{section.1.4}% 7
+\BOOKMARK [1][-]{section.1.5}{Mapping mbv Rao-Blackwellization}{chapter.1}% 8
+\BOOKMARK [2][-]{subsection.1.5.1}{Implementatie: FastSLAM}{section.1.5}% 9
+\BOOKMARK [2][-]{subsection.1.5.2}{Grid-Based FastSLAM}{section.1.5}% 10

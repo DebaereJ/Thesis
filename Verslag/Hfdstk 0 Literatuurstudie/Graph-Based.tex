@@ -1,0 +1,46 @@
+\documentclass{book}
+
+\usepackage{titling}
+\title{Literatuurstudie}
+\author{Debaere Jens \and Simon Vanpaemel}
+\usepackage[pdftitle={\thetitle},pdfauthor={\theauthor}]{hyperref}
+\usepackage[dutch]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, amsthm, siunitx , graphicx, epstopdf}
+\usepackage{tabularx}
+%\usepackage{subfigure}
+\usepackage{epstopdf}
+\usepackage[export]{adjustbox}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{xfrac}
+\usepackage{fancyhdr}
+\usepackage{mathabx}
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup{compatibility=false}
+%\usepackage{gensymb}
+\usepackage{lscape}
+\usepackage{multicol}
+\begin{document}
+\chapter{Literatuurstudie}
+\section{Algoritmes}
+\subsection{Graph-Based SLAM}
+Graph-Based SLAM is een methode die niet gebaseerd is op de recursieve Bayes Filter maar eerder op een graaf-voorstelling van het probleem. Elke knoop stelt een positie voor terwijl de verbindingen tussen de knopen staan voor randvoorwaarden tussen de twee knopen. Deze kunnen enerzijds afkomstig zijn van het bewegingsmodel waarin de voorspelling gemaakt wordt op basis van de besturingscommando's (e: odometry). Anderzijds kunnen ook randvoorwaarden opgelegd worden op basis van de observaties. Hiervoor worden observaties van de ene toestand vergeleken met die van de volgende toestand en wordt gezocht naar maximaal overlap. Op basis daarvan kan dan een andere voorspelling gemaakt worden van de volgende toestand, en meteen ook de relatieve relatie volgens de observaties tussen deze twee toestanden gedefinieerd worden.\\
+Zo'n verbinding stelt dus eigenlijk een kansverdeling van de relatieve positie tussen de twee knopen voor aangezien in beide modellen ook de variantie opgenomen is. In een ééndimensionale omgeving zou dit dus de waarschijnlijkheid voor de afstand tussen de twee knopen volgens de hoofdas zijn. 
+%Omdat vanuit een knoop in het algemene geval meerdere knopen waargenomen kunnen worden is de verdeling van het observatiemodel niet gaussisch maar wel multimodaal. Om toch de complexiteit in de hand te houden wordt in praktische implementaties de meest waarschijnlijke topologie bepaald en de verdeling beperkt zodat deze gaussich kan worden beschouwd. 
+Door nu voor elke knoop de voorspelling op basis van het bewegingsmodel $\hat{z}_{ij}$ te vergelijken met de voorspelling op basis van het observatiemodel $z_{ij}$ kan een foutenfunctie bepaalt worden voor elke knoop als volgt:
+\begin{equation}
+e_{ij}(x_i,x_j) = z_{ij} - \hat{z}_{ij}(x_i,x_j)
+\end{equation}
+Door dit voor elke observatie te doen kan vervolgens een foutenfunctie opgesteld worden:
+\begin{equation}
+F(x) = \sum\limits_{(i,j)} e_{ij}^T \Omega_{ij} e_{ij}
+\end{equation}
+waarbij $\Omega_{ij}$ als gedefinieerd in (\ref{infor}).\\
+Om nu de meest waarschijnlijke posities te bekomen moet deze functie geminimaliseerd worden. Een manier om dat te doen wordt aangereikt in sectie IV. A in \cite{graph} van de referenties.
+
+\end{document}
